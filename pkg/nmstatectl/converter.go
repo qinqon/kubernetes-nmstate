@@ -10,9 +10,29 @@ import (
 )
 
 const nmstateCommand = "nmstatectl"
+const nmCommand = "nm"
+
+func checkNetworkManager() error {
+
+	if _, err := exec.LookPath(nmCommand); err != nil {
+		return fmt.Errorf("Error looking for nm command: %v", err)
+	}
+
+	cmd := exec.Command("systemctl", "status", "NetworkManager")
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("NetworkManager not running: %v", err)
+	}
+
+	return nil
+}
 
 // Show is populating the passed ConfAndOperationalState object from the output of "nmstatectl show"
 func Show(currentState *v1.ConfAndOperationalState) (err error) {
+
+	if err := checkNetworkManager(); err != nil {
+		return err
+	}
+
 	cmd := exec.Command(nmstateCommand, "show", "--json")
 	var buff []byte
 
@@ -31,6 +51,11 @@ func Show(currentState *v1.ConfAndOperationalState) (err error) {
 
 // Set is executing "nmstatectl set" based on the parameters passed in the ConfigurationState object
 func Set(desiredState *v1.ConfigurationState) error {
+
+	if err := checkNetworkManager(); err != nil {
+		return err
+	}
+
 	cmd := exec.Command(nmstateCommand, "set")
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
