@@ -33,6 +33,7 @@ import (
 	nmstatev1beta1 "github.com/nmstate/kubernetes-nmstate/api/v1beta1"
 	nmstate "github.com/nmstate/kubernetes-nmstate/pkg/helper"
 	"github.com/nmstate/kubernetes-nmstate/pkg/nmstatectl"
+	"github.com/nmstate/kubernetes-nmstate/pkg/state"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -89,8 +90,9 @@ func (r *NodeNetworkStateReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		DeleteFunc: func(deleteEvent event.DeleteEvent) bool {
 			return nmstate.EventIsForThisNode(deleteEvent.Meta)
 		},
-		UpdateFunc: func(event.UpdateEvent) bool {
-			return false
+		UpdateFunc: func(updateEvent event.UpdateEvent) bool {
+			return nmstate.EventIsForThisNode(updateEvent.MetaNew) &&
+				isForceRefresh(updateEvent)
 		},
 		GenericFunc: func(event.GenericEvent) bool {
 			return false
@@ -101,4 +103,18 @@ func (r *NodeNetworkStateReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		For(&nmstatev1beta1.NodeNetworkState{}).
 		WithEventFilter(onDeleteForThisNode).
 		Complete(r)
+}
+
+func isForceRefresh(updateEvent event.UpdateEvent) bool {
+	newForceRefresh, ok := updateEvent.MetaNew.GetLabels()[state.ForceRefreshLabel]
+	if !ok {
+		// There is no force refresh label so we don't force it
+		return false
+	}
+	oldForceRefresh, ok := updateEvent.MetaOld.GetLabels()[state.ForceRefreshLabel]
+	if !ok {
+		// There were not force refresh label before so we force it
+		return true
+	}
+	return oldForceRefresh != newForceRefresh
 }

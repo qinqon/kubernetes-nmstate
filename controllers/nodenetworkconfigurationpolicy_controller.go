@@ -50,6 +50,7 @@ import (
 	nmstate "github.com/nmstate/kubernetes-nmstate/pkg/helper"
 	"github.com/nmstate/kubernetes-nmstate/pkg/policyconditions"
 	"github.com/nmstate/kubernetes-nmstate/pkg/selectors"
+	"github.com/nmstate/kubernetes-nmstate/pkg/state"
 	"k8s.io/apimachinery/pkg/types"
 )
 
@@ -281,6 +282,8 @@ func (r *NodeNetworkConfigurationPolicyReconciler) Reconcile(request ctrl.Reques
 
 	enactmentConditions.NotifySuccess()
 
+	r.forceNNSRefresh(nodeName)
+
 	return ctrl.Result{}, nil
 }
 
@@ -324,6 +327,20 @@ func (r *NodeNetworkConfigurationPolicyReconciler) SetupWithManager(mgr ctrl.Man
 		return errors.Wrap(err, "failed to add controller to NNCP Reconciler listening Node events")
 	}
 	return nil
+}
+
+func (r *NodeNetworkConfigurationPolicyReconciler) forceNNSRefresh(name string) {
+	nns := &nmstatev1beta1.NodeNetworkState{}
+	err := r.Client.Get(context.TODO(), types.NamespacedName{Name: name}, nns)
+	if err != nil {
+		return
+	}
+	if nns.Labels == nil {
+		nns.Labels = map[string]string{}
+	}
+	nns.Labels[state.ForceRefreshLabel] = time.Now().String()
+
+	r.Client.Update(context.Background(), nns)
 }
 
 func desiredState(object runtime.Object) (nmstateapi.State, error) {
