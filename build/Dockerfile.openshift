@@ -8,6 +8,7 @@ FROM registry.ci.openshift.org/ocp/4.12:base
 RUN \
     dnf -y update && \
     dnf -y install \
+        nmstate-plugin-ovsdb \
         nmstate \
         iputils \
         iproute && \
