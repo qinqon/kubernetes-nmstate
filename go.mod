@@ -74,6 +74,7 @@ require (
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/prometheus/common v0.44.0 // indirect
 	github.com/prometheus/procfs v0.10.1 // indirect
+	github.com/qinqon/nmstate/rust/src/go/api/v2 v2.0.0-20230511111801-47c365e7c53f // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/spf13/cobra v1.6.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
@@ -121,3 +122,5 @@ require (
 replace github.com/nmstate/kubernetes-nmstate/api => ./api
 
 replace k8s.io/client-go => k8s.io/client-go v0.26.3
+
+//replace github.com/qinqon/nmstate/rust/src/go/api/v2 => ../nmstate/rust/src/go/api/
