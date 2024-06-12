@@ -19,27 +19,7 @@ package handler
 
 import (
 	"strings"
-
-	"github.com/nmstate/kubernetes-nmstate/test/cmd"
-	testenv "github.com/nmstate/kubernetes-nmstate/test/env"
-	"github.com/nmstate/kubernetes-nmstate/test/runner"
 )
-
-func getMetrics(token string) map[string]string {
-	bearer := "Authorization: Bearer " + token
-	return indexMetrics(runner.RunAtMetricsPod("curl", "-s", "-k", "--header",
-		bearer, ":8089", "https://127.0.0.1:8443/metrics"))
-}
-
-func getPrometheusToken() (string, error) {
-	const (
-		prometheusPod = "prometheus-k8s-0"
-		container     = "prometheus"
-		tokenPath     = "/var/run/secrets/kubernetes.io/serviceaccount/token" // #nosec G101
-	)
-
-	return cmd.Kubectl("exec", "-n", testenv.MonitoringNamespace, prometheusPod, "-c", container, "--", "cat", tokenPath)
-}
 
 func indexMetrics(metrics string) map[string]string {
 	metricsMap := map[string]string{}
