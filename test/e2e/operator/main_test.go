@@ -32,6 +32,7 @@ import (
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
+	"github.com/nmstate/kubernetes-nmstate/pkg/cluster"
 	testenv "github.com/nmstate/kubernetes-nmstate/test/env"
 	knmstatereporter "github.com/nmstate/kubernetes-nmstate/test/reporter"
 )
@@ -43,6 +44,7 @@ var (
 	knmstateReporter *knmstatereporter.KubernetesNMStateReporter
 	manifestFiles    = []string{"namespace.yaml", "service_account.yaml", "operator.yaml", "role.yaml", "role_binding.yaml"}
 	defaultOperator  TestData
+	isOpenShift      bool
 )
 
 func TestE2E(t *testing.T) {
@@ -71,6 +73,10 @@ var _ = BeforeSuite(func() {
 
 	knmstateReporter = knmstatereporter.New("test_logs/e2e/operator", testenv.OperatorNamespace, nodes)
 	knmstateReporter.Cleanup()
+
+	var err error
+	isOpenShift, err = cluster.IsOpenShift(testenv.Client)
+	Expect(err).ToNot(HaveOccurred())
 })
 
 var _ = AfterSuite(func() {

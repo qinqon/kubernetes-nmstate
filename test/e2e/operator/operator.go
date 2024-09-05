@@ -119,8 +119,10 @@ func EventuallyOperandIsReady(testData TestData) {
 	daemonset.GetEventually(testData.HandlerKey).Should(daemonset.BeReady(), "should start handler daemonset")
 	By("Wait deployment webhook is ready")
 	deployment.GetEventually(testData.WebhookKey).Should(deployment.BeReady(), "should start webhook deployment")
-	By("Wait deployment cert-manager is ready")
-	deployment.GetEventually(testData.CertManagerKey).Should(deployment.BeReady(), "should start cert-manager deployment")
+	if !isOpenShift {
+		By("Wait deployment cert-manager is ready")
+		deployment.GetEventually(testData.CertManagerKey).Should(deployment.BeReady(), "should start cert-manager deployment")
+	}
 	if testData.MetricsKey != nil {
 		By("Wait deployment metrics is ready")
 		deployment.GetEventually(*testData.MetricsKey).Should(deployment.BeReady(), "should start metrics deployment")
@@ -130,7 +132,9 @@ func EventuallyOperandIsReady(testData TestData) {
 func EventuallyOperandIsNotFound(testData TestData) {
 	EventuallyIsNotFound(testData.HandlerKey, &appsv1.DaemonSet{}, "should delete handler daemonset")
 	EventuallyIsNotFound(testData.WebhookKey, &appsv1.Deployment{}, "should delete webhook deployment")
-	EventuallyIsNotFound(testData.CertManagerKey, &appsv1.Deployment{}, "should delete cert-manager deployment")
+	if !isOpenShift {
+		EventuallyIsNotFound(testData.CertManagerKey, &appsv1.Deployment{}, "should delete cert-manager deployment")
+	}
 	if testData.MetricsKey != nil {
 		EventuallyIsNotFound(*testData.MetricsKey, &appsv1.Deployment{}, "should delete metrics deployment")
 	}
@@ -149,7 +153,9 @@ func EventuallyOperandIsNotFound(testData TestData) {
 func EventuallyOperandIsFound(testData TestData) {
 	EventuallyIsFound(testData.HandlerKey, &appsv1.DaemonSet{}, "should create handler daemonset")
 	EventuallyIsFound(testData.WebhookKey, &appsv1.Deployment{}, "should create webhook deployment")
-	EventuallyIsFound(testData.CertManagerKey, &appsv1.Deployment{}, "should create cert-manager deployment")
+	if !isOpenShift {
+		EventuallyIsFound(testData.CertManagerKey, &appsv1.Deployment{}, "should create cert-manager deployment")
+	}
 	if testData.MetricsKey != nil {
 		EventuallyIsFound(*testData.MetricsKey, &appsv1.Deployment{}, "should create metrics deployment")
 	}
