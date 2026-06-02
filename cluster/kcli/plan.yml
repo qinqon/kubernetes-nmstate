@@ -1,0 +1,41 @@
+{#
+  kcli plan template for the kubernetes-nmstate local development cluster.
+
+  Renders a set of libvirt VMs named node01..node0N (node01 is the
+  control-plane, the rest are workers) running CentOS Stream 9.
+
+  Parameters (passed by cluster/up.sh via -P):
+    numnodes          total number of nodes (default 3: 1 cp + 2 workers)
+    numsecondarynics  extra NICs per node attached to the default network
+    image             base image (default centos9stream)
+    network           primary libvirt network (default default)
+    numcpus           vCPUs per node
+    memory            RAM (MiB) per node
+    machine           libvirt machine type. 'pc' (i440fx) yields predictable
+                      ens3/ens8/ens9 interface names matching the Makefile.
+
+  Secondary NICs are attached to the same primary network, reproducing the
+  previous kubevirtci behaviour where they receive an address in the same CIDR
+  that hack/flush-secondary-nics.sh later clears.
+#}
+{% set numnodes = numnodes | default(3) | int %}
+{% set numsecondarynics = numsecondarynics | default(2) | int %}
+{% set image = image | default('centos9stream') %}
+{% set network = network | default('default') %}
+{% set numcpus = numcpus | default(4) | int %}
+{% set memory = memory | default(6144) | int %}
+{% set machine = machine | default('pc') %}
+{% set allnets = [network] * (1 + numsecondarynics) %}
+
+{% for n in range(1, numnodes + 1) %}
+node{{ '%02d' | format(n) }}:
+ image: {{ image }}
+ machine: {{ machine }}
+ numcpus: {{ numcpus }}
+ memory: {{ memory }}
+ disks:
+ - size: 30
+ nets: {{ allnets }}
+ reservedns: true
+ reservehosts: true
+{% endfor %}
