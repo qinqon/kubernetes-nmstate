@@ -117,7 +117,7 @@ SKIP_IMAGE_BUILD ?= false
 
 all: check handler operator
 
-check: lint vet whitespace-check gofmt-check promlint-check
+check: lint lint-helm vet whitespace-check gofmt-check promlint-check
 
 format: whitespace-format gofmt
 
@@ -143,6 +143,9 @@ promlint-check:
 
 lint:
 	hack/lint.sh
+
+lint-helm: helm
+	$(HELM) lint charts/kubernetes-nmstate
 
 OPERATOR_SDK = $(CURDIR)/build/_output/bin/operator-sdk_${OPERATOR_SDK_VERSION}
 operator-sdk: ## Download operator-sdk locally.
@@ -176,15 +179,17 @@ gen-k8s:
 
 gen-crds:
 	cd api && $(CONTROLLER_GEN) crd paths="./..." output:crd:artifacts:config=../deploy/crds
+	cp deploy/crds/nmstate.io_nmstates.yaml charts/kubernetes-nmstate/crds/nmstate.io_nmstates.yaml
 
 gen-rbac:
-	$(CONTROLLER_GEN) crd rbac:roleName=nmstate-operator paths="./controllers/operator/..." output:rbac:artifacts:config=deploy/operator
+	$(CONTROLLER_GEN) crd rbac:roleName=nmstate-operator paths="./controllers/operator/..." output:rbac:artifacts:config=charts/kubernetes-nmstate/templates
 
 check-gen: check-manifests check-bundle
 
 check-manifests: generate
 	git diff --exit-code -s api || (echo "It seems like you need to run 'make generate'. Please run it and commit the changes" && git diff && exit 1)
 	git diff --exit-code -s deploy || (echo "It seems like you need to run 'make generate'. Please run it and commit the changes" && git diff && exit 1)
+	git diff --exit-code -s charts || (echo "It seems like you need to run 'make generate'. Please run it and commit the changes" && git diff && exit 1)
 
 check-bundle: bundle
 	git diff --exit-code -I'^    createdAt: ' -s || (echo "It seems like you need to run 'make bundle'. Please run it and commit the changes" && git diff && exit 1)
@@ -347,6 +352,7 @@ olm-push: bundle-push index-push
 	check-gen \
 	operator-sdk \
 	helm \
+	lint-helm \
 	test-e2e-handler \
 	test-e2e-operator \
 	test-e2e \
