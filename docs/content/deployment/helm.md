@@ -38,8 +38,7 @@ for privileged workloads automatically.
 | `monitoring.namespace` | `monitoring` | Cluster monitoring namespace |
 | `kubeRbacProxy.image` | `quay.io/openshift/origin-kube-rbac-proxy:4.10.0` | kube-rbac-proxy image |
 | `createNamespace` | `false` | Emit a Namespace object for the release namespace (use `helm install --create-namespace` instead) |
-| `nmstate.enabled` | `true` | Create the `NMState` custom resource at install time |
-| `nmstate.name` | `nmstate` | Name of the created `NMState` custom resource |
+| `nmstate.enabled` | `true` | Create the `NMState` custom resource (named `nmstate`) at install time |
 | `nmstate.spec` | `{}` | Passthrough for `NMState` spec fields (`nodeSelector`, `tolerations`, ...) |
 
 ## Upgrade
