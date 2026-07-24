@@ -29,8 +29,11 @@ KUBE_RBAC_PROXY_IMAGE_REPO ?= openshift
 KUBE_RBAC_PROXY_FULL_NAME ?= $(KUBE_RBAC_PROXY_IMAGE_REPO)/$(KUBE_RBAC_PROXY_NAME):$(KUBE_RBAC_PROXY_TAG)
 KUBE_RBAC_PROXY_IMAGE ?= $(KUBE_RBAC_PROXY_IMAGE_REGISTRY)/$(KUBE_RBAC_PROXY_FULL_NAME)
 
+# Console plugin image passed through to the chart. Upstream leaves
+# PLUGIN_IMAGE empty (opt-in for downstream distributions); the openshift
+# fork carries a default.
 PLUGIN_IMAGE_NAME ?= nmstate-console-plugin
-PLUGIN_IMAGE_TAG ?= release-1.0.0
+PLUGIN_IMAGE_TAG ?= latest
 PLUGIN_IMAGE_FULL_NAME ?= $(IMAGE_REPO)/$(PLUGIN_IMAGE_NAME):$(PLUGIN_IMAGE_TAG)
 PLUGIN_IMAGE ?= $(IMAGE_REGISTRY)/$(PLUGIN_IMAGE_FULL_NAME)
 
@@ -99,7 +102,7 @@ LOCAL_REGISTRY ?= registry:5000
 
 export MANIFESTS_DIR ?= build/_output/manifests
 HELM_RENDERED_MANIFESTS_DIR ?= $(MANIFESTS_DIR)/kubernetes-nmstate/templates
-BUNDLE_DIR ?= ./bundle
+BUNDLE_DIR ?= bundle
 BUNDLE_DOCKERFILE ?= bundle.Dockerfile
 MANIFEST_BASES_DIR ?= deploy/bases
 
@@ -312,7 +315,7 @@ bundle: operator-sdk gen-crds manifests
 	mkdir -p $(HELM_RENDERED_MANIFESTS_DIR)/bases
 	cp deploy/examples/*.yaml $(HELM_RENDERED_MANIFESTS_DIR)/
 	cat $(MANIFEST_BASES_DIR)/kubernetes-nmstate-operator.clusterserviceversion.yaml | OPERATOR_IMAGE=$(OPERATOR_IMAGE) envsubst > $(HELM_RENDERED_MANIFESTS_DIR)/bases/kubernetes-nmstate-operator.clusterserviceversion.yaml
-	$(OPERATOR_SDK) generate bundle -q --overwrite --version $(VERSION) $(BUNDLE_METADATA_OPTS) --deploy-dir $(HELM_RENDERED_MANIFESTS_DIR) --crds-dir deploy/crds </dev/null
+	$(OPERATOR_SDK) generate bundle -q --overwrite --version $(VERSION) $(BUNDLE_METADATA_OPTS) --deploy-dir $(HELM_RENDERED_MANIFESTS_DIR) --crds-dir deploy/crds --output-dir $(BUNDLE_DIR) </dev/null
 	$(OPERATOR_SDK) bundle validate $(BUNDLE_DIR)
 
 # Update the OCP bundle manifests

@@ -15,8 +15,8 @@ handler:
   prefix: ""
 
 plugin:
-  # Console plugin image used by the operator on OpenShift. When empty,
-  # defaults to quay.io/nmstate/nmstate-console-plugin:release-1.0.0.
+  # Console plugin image used by the operator on OpenShift. When empty (the
+  # default), no PLUGIN_IMAGE environment variable is rendered.
   image: ""
 
 monitoring:
