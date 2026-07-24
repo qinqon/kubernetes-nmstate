@@ -17,9 +17,6 @@ handler:
 monitoring:
   namespace: monitoring
 
-kubeRbacProxy:
-  image: quay.io/openshift/origin-kube-rbac-proxy:4.10.0
-
 # Emit a Namespace object for the release namespace. Used by the manifest
 # rendering pipeline; helm users should rely on `helm install
 # --create-namespace` instead.

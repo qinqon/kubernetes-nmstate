@@ -42,7 +42,6 @@ for privileged workloads automatically.
 | `handler.namespace` | `nmstate` | Namespace the operator deploys the handler into |
 | `handler.prefix` | `""` | Optional name prefix for the handler resources deployed by the operator |
 | `monitoring.namespace` | `monitoring` | Cluster monitoring namespace |
-| `kubeRbacProxy.image` | `quay.io/openshift/origin-kube-rbac-proxy:4.10.0` | kube-rbac-proxy image |
 | `createNamespace` | `false` | Emit a Namespace object for the release namespace (use `helm install --create-namespace` instead) |
 | `nmstate.enabled` | `true` | Create the `NMState` custom resource (named `nmstate`) at install time |
 | `nmstate.spec` | `{}` | Passthrough for `NMState` spec fields (`nodeSelector`, `tolerations`, ...) |
