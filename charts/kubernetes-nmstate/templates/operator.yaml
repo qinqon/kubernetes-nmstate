@@ -94,14 +94,16 @@ spec:
               value: "6060"
             - name: RUN_OPERATOR
               value: ""
-            - name: RELATED_IMAGE_HANDLER_IMAGE
+            - name: {{ .Values.handler.imageEnvVar | default "RELATED_IMAGE_HANDLER_IMAGE" }}
               value: {{ include "kubernetes-nmstate.handlerImage" . | quote }}
             - name: HANDLER_IMAGE_PULL_POLICY
               value: {{ .Values.handler.pullPolicy | quote }}
             - name: HANDLER_NAMESPACE
               value: {{ .Values.handler.namespace | quote }}
+{{- if .Values.handler.prefix }}
             - name: HANDLER_PREFIX
               value: {{ .Values.handler.prefix | quote }}
+{{- end }}
 {{- if .Values.plugin.image }}
             - name: PLUGIN_IMAGE
               value: {{ .Values.plugin.image | quote }}

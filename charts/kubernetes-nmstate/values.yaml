@@ -12,7 +12,12 @@ handler:
   # Namespace the operator deploys the handler into (created by the operator).
   namespace: nmstate
   # Optional name prefix for the handler resources deployed by the operator.
+  # When empty (the default), no HANDLER_PREFIX environment variable is rendered.
   prefix: ""
+  # Name of the operator environment variable carrying the handler image.
+  # Downstream distributions can override it (e.g. HANDLER_IMAGE) to opt out
+  # of operator-sdk's RELATED_IMAGE_* handling.
+  imageEnvVar: RELATED_IMAGE_HANDLER_IMAGE
 
 plugin:
   # Console plugin image used by the operator on OpenShift. When empty (the

@@ -16,6 +16,10 @@ HANDLER_IMAGE_TAG ?= latest
 HANDLER_IMAGE_FULL_NAME ?= $(IMAGE_REPO)/$(HANDLER_IMAGE_NAME):$(HANDLER_IMAGE_TAG)
 HANDLER_IMAGE ?= $(IMAGE_REGISTRY)/$(HANDLER_IMAGE_FULL_NAME)
 export HANDLER_PREFIX ?=
+# Name of the operator env var carrying the handler image. Downstream
+# distributions like openshift/kubernetes-nmstate override it (HANDLER_IMAGE)
+# to opt out of operator-sdk's RELATED_IMAGE_* handling.
+HANDLER_IMAGE_ENV_VAR ?= RELATED_IMAGE_HANDLER_IMAGE
 
 OPERATOR_IMAGE_NAME ?= kubernetes-nmstate-operator
 OPERATOR_IMAGE_TAG ?= latest
@@ -214,6 +218,7 @@ manifests: $(HELM)
 		--set operator.image=$(OPERATOR_IMAGE) \
 		--set operator.pullPolicy=$(OPERATOR_PULL_POLICY) \
 		--set handler.image=$(HANDLER_IMAGE) \
+		--set handler.imageEnvVar=$(HANDLER_IMAGE_ENV_VAR) \
 		--set handler.pullPolicy=$(HANDLER_PULL_POLICY) \
 		--set handler.namespace=$(HANDLER_NAMESPACE) \
 		--set handler.prefix=$(HANDLER_PREFIX) \

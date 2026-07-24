@@ -40,7 +40,9 @@ for privileged workloads automatically.
 | `handler.image` | `""` | Handler image; empty means `quay.io/nmstate/kubernetes-nmstate-handler:<appVersion>` |
 | `handler.pullPolicy` | `IfNotPresent` | Handler image pull policy |
 | `handler.namespace` | `nmstate` | Namespace the operator deploys the handler into |
-| `handler.prefix` | `""` | Optional name prefix for the handler resources deployed by the operator |
+| `handler.prefix` | `""` | Optional name prefix for the handler resources deployed by the operator; when empty no `HANDLER_PREFIX` env is rendered |
+| `handler.imageEnvVar` | `RELATED_IMAGE_HANDLER_IMAGE` | Name of the operator env var carrying the handler image |
+| `plugin.image` | `""` | Console plugin image for downstream distributions; when empty no `PLUGIN_IMAGE` env is rendered |
 | `monitoring.namespace` | `monitoring` | Cluster monitoring namespace |
 | `createNamespace` | `false` | Emit a Namespace object for the release namespace (use `helm install --create-namespace` instead) |
 | `nmstate.enabled` | `true` | Create the `NMState` custom resource (named `nmstate`) at install time |
