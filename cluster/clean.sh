@@ -4,7 +4,13 @@ set -ex
 
 source ./cluster/lima.sh
 lima::ensure_linux
-source ./cluster/sync-operator.sh
+
+kubectl=./cluster/kubectl.sh
+OPERATOR_NAMESPACE=${OPERATOR_NAMESPACE:-nmstate}
+HANDLER_NAMESPACE=${HANDLER_NAMESPACE:-nmstate}
+HELM_VERSION=${HELM_VERSION:-v3.16.2}
+HELM=${HELM:-./build/_output/bin/helm-${HELM_VERSION}}
+HELM_RELEASE_NAME=${HELM_RELEASE_NAME:-nmstate}
 
 function eventually {
     timeout=15
@@ -24,6 +30,14 @@ function clean() {
     echo 'Cleaning up ...'
 
     clean_operator
+}
+
+function clean_operator() {
+    ${HELM} uninstall "${HELM_RELEASE_NAME}" \
+        --kubeconfig "${KUBECONFIG}" \
+        --namespace "${OPERATOR_NAMESPACE}" \
+        --ignore-not-found \
+        --wait --timeout 5m
 }
 
 # Use labels so we don't care about prefixes

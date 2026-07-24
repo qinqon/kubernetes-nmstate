@@ -56,20 +56,10 @@ function deploy_operator() {
         --wait --timeout 5m
 }
 
-function clean_operator() {
-    ${HELM} uninstall "${HELM_RELEASE_NAME}" \
-        --kubeconfig "${KUBECONFIG}" \
-        --namespace "${OPERATOR_NAMESPACE}" \
-        --ignore-not-found \
-        --wait --timeout 5m
-}
-
 function sync_operator() {
     local nmstate_enabled=${1:-false}
     # Cleanup previous deployment, if there is any
-    if [[ -x "${HELM}" ]]; then
-        clean_operator
-    fi
+    make cluster-clean
 
     # push() builds and pushes images. On kubevirtci providers it also exports
     # IMAGE_REGISTRY / OPERATOR_IMAGE_FULL_NAME / HANDLER_IMAGE_FULL_NAME.
