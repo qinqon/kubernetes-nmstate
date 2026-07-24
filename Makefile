@@ -33,6 +33,11 @@ KUBE_RBAC_PROXY_IMAGE_REPO ?= openshift
 KUBE_RBAC_PROXY_FULL_NAME ?= $(KUBE_RBAC_PROXY_IMAGE_REPO)/$(KUBE_RBAC_PROXY_NAME):$(KUBE_RBAC_PROXY_TAG)
 KUBE_RBAC_PROXY_IMAGE ?= $(KUBE_RBAC_PROXY_IMAGE_REGISTRY)/$(KUBE_RBAC_PROXY_FULL_NAME)
 
+# openshift fork carry: the fork's operator code reads HANDLER_IMAGE and image
+# substitution is driven by ART image-references, not OLM relatedImages, so
+# opt out of the RELATED_IMAGE_* naming.
+HANDLER_IMAGE_ENV_VAR = HANDLER_IMAGE
+
 # Console plugin image passed through to the chart. Upstream leaves
 # PLUGIN_IMAGE empty (opt-in for downstream distributions); the openshift
 # fork carries a default.
