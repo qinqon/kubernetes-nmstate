@@ -30,7 +30,7 @@ KUBE_RBAC_PROXY_FULL_NAME ?= $(KUBE_RBAC_PROXY_IMAGE_REPO)/$(KUBE_RBAC_PROXY_NAM
 KUBE_RBAC_PROXY_IMAGE ?= $(KUBE_RBAC_PROXY_IMAGE_REGISTRY)/$(KUBE_RBAC_PROXY_FULL_NAME)
 
 PLUGIN_IMAGE_NAME ?= nmstate-console-plugin
-PLUGIN_IMAGE_TAG ?= latest
+PLUGIN_IMAGE_TAG ?= release-1.0.0
 PLUGIN_IMAGE_FULL_NAME ?= $(IMAGE_REPO)/$(PLUGIN_IMAGE_NAME):$(PLUGIN_IMAGE_TAG)
 PLUGIN_IMAGE ?= $(IMAGE_REGISTRY)/$(PLUGIN_IMAGE_FULL_NAME)
 
@@ -214,6 +214,7 @@ manifests: $(HELM)
 		--set handler.pullPolicy=$(HANDLER_PULL_POLICY) \
 		--set handler.namespace=$(HANDLER_NAMESPACE) \
 		--set handler.prefix=$(HANDLER_PREFIX) \
+		--set plugin.image=$(PLUGIN_IMAGE) \
 		--set monitoring.namespace=$(MONITORING_NAMESPACE) \
 		--output-dir $(MANIFESTS_DIR)
 

@@ -14,6 +14,11 @@ handler:
   # Optional name prefix for the handler resources deployed by the operator.
   prefix: ""
 
+plugin:
+  # Console plugin image used by the operator on OpenShift. When empty,
+  # defaults to quay.io/nmstate/nmstate-console-plugin:release-1.0.0.
+  image: ""
+
 monitoring:
   namespace: monitoring
 

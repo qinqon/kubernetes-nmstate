@@ -102,6 +102,8 @@ spec:
               value: {{ .Values.handler.namespace | quote }}
             - name: HANDLER_PREFIX
               value: {{ .Values.handler.prefix | quote }}
+            - name: PLUGIN_IMAGE
+              value: {{ include "kubernetes-nmstate.pluginImage" . | quote }}
             - name: MONITORING_NAMESPACE
               value: {{ .Values.monitoring.namespace | quote }}
             - name: OPERATOR_NAMESPACE
